@@ -3,15 +3,18 @@
 
 # THIS IS THE INPUT PART
 echo Hello, who am I talking to?
-
 read varname
 
-
+if [ "$varname" == "" ]; then
+  echo "Not a valid username! Try again."
+  sh ./system-details.sh
+else
+  echo "Hello $varname."
 
 # THIS IS THE OUTPUT PART
 
 # The name/handle entered by the user running the script
-echo "Hello $varname. You are now running the bash script \"system-details.sh\" to provide the following system details:"
+echo "You are now running the bash script \"system-details.sh\" to provide the following system details:"
 echo ------------------------------------------------------
 echo " "
 
@@ -64,3 +67,4 @@ echo "${listenport}"
 runningprocesses=$(ps aux | wc -l)
 
 echo "Number of processes running on this system: ${runningprocesses}"
+fi
