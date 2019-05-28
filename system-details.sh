@@ -14,7 +14,9 @@ else
 # THIS IS THE OUTPUT PART
 
 # The name/handle entered by the user running the script
-echo "You are now running the bash script \"system-details.sh\" to provide the following system details:"
+FILE_NAME=$(basename -- "$0")
+
+echo "You are now running the bash script ${FILE_NAME}. Here are some details about this system:"
 echo ------------------------------------------------------
 echo " "
 
