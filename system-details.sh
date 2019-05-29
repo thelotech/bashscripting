@@ -28,12 +28,11 @@ hostname=$(hostname)
 echo "The system hostname is ${hostname}."
 echo " "
 
-ipv41=$(ifconfig | grep inet | grep -v inet6 | tail -2 | head -1)
-ipv42=$(ip -br addr show | awk '{print $1 ": " $3}' | cut -d/ -f1)
-ipv43=$(ip -br addr show | awk '{print $1 " " $3}')
+ipv4=$(ip -br addr show | awk '{print $1 ": " $3}' | cut -d/ -f1)
+ipv4a=$(ip -br addr show | awk '{print $1 " " $3}')
 macaddress=$(ifconfig | grep ether | awk '{print $2}')
 echo "Check out the IPv4 address(es) for network interface(s): "
-echo "${ipv42}"
+echo "${ipv4}"
 echo " "
 echo "The MAC address is ${macaddress}." 
 echo " "
@@ -45,3 +44,7 @@ echo " "
 
 runningprocesses=$(ps aux | wc -l)
 echo "There are ${runningprocesses} processes running on this system."
+echo " "
+
+freespace=$(df -hT /home | tail -n+2 | awk '{print $5}')
+echo "There are $freespace of free space left in the root filesystem."
