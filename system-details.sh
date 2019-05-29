@@ -1,72 +1,50 @@
 #!/bin/sh
 
+# This script was made to practice bash scripting.
 
-# THIS IS THE INPUT PART
 echo Hello, who am I talking to?
+
 read varname
 
-if [ "$varname" == "" ]; then
-  echo "Not a valid username! Try again."
-  sh ./system-details.sh
-else
-  echo "Hello $varname."
-
-# THIS IS THE OUTPUT PART
-
-# The name/handle entered by the user running the script
 FILE_NAME=$(basename -- "$0")
-
+echo " "
+echo "Hello ${varname}!"
 echo "You are now running the bash script ${FILE_NAME}. Here are some details about this system:"
 echo ------------------------------------------------------
 echo " "
 
-# Current directory that the user is in
-echo Currently, you are hanging out in the following directory: $PWD
+echo "You are currently in directory $PWD."
 echo " "
 
-# Amount of RAM dedicated to the system
-hwmemsize=$(free -g | grep MemTotal /proc/meminfo)
-
-echo "This is how much RAM has been dedicated to this system:"
-echo "${hwmemsize}"
+hwmemsize=$(free -g | grep MemTotal /proc/meminfo | awk '{print $2 " " $3}')
+echo "This system has ${hwmemsize} of RAM dedicated to it."
 echo " "
 
-# Uptime of the system
-systemuptime=$(uptime)
-
-echo "The uptime of this system is: "
-echo "${systemuptime}"
+systemuptime=$(uptime -p | awk '{$1=""}1')
+echo "This system has been in operation for${systemuptime}!"
 echo " "
 
-# Hostname of the system
 hostname=$(hostname)
-
-echo "The system hostname is: ${hostname}"
+echo "The system hostname is ${hostname}."
 echo " "
 
-# IPv4 address of each network interface
-ipv4addresses=$(ifconfig | grep inet | grep -v inet6 | tail -2 | head -1)
-
-echo "The IPv4 address for the network interfaces are:" 
-echo "${ipv4addresses}" | awk '{print $2;}'
+ipv4=$(ip -br addr show | awk '{print $1 ": " $3}' | cut -d/ -f1)
+ipv4a=$(ip -br addr show | awk '{print $1 " " $3}')
+macaddress=$(ifconfig | grep ether | awk '{print $2}')
+echo "Check out the IPv4 address(es) for network interface(s): "
+echo "${ipv4}"
+echo " "
+echo "The MAC address is ${macaddress}." 
 echo " "
 
-# MAC address of each network interface
-macaddress=$(ifconfig | grep ether)
-
-echo "The MAC address for the network interface is: " 
-echo "${macaddress}"
+lport1=$(sudo netstat -plunt | tail -n+3 | awk '{print $4}' | cut -d: -f2)
+lport2=$()
+echo "Services are listening on port(s): $lport1."
 echo " "
 
-# LISTENing ports (hint: this can be found with the netstat program)
-listenport=$(netstat -plnt)
-
-echo "These are the LISTENing ports: "
-echo " "
-echo "${listenport}"
-
-# Total number of processes running on the system
 runningprocesses=$(ps aux | wc -l)
+echo "There are ${runningprocesses} processes running on this system."
+echo " "
 
-echo "Number of processes running on this system: ${runningprocesses}"
-fi
+freespace=$(df -hT /home | tail -n+2 | awk '{print $5}')
+echo "There are $freespace of free space left in the root filesystem."
