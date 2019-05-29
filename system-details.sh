@@ -38,9 +38,15 @@ echo "The MAC address is ${macaddress}."
 echo " "
 
 lport1=$(sudo netstat -plunt | tail -n+3 | grep LISTEN | awk '{print $4}' | cut -d: -f2)
-lport2=$()
+lport2=$(sudo netstat -plunt | tail -n+3 | awk '{print $4}' | cut -d: -f2)
 echo "Services are listening on the following port(s): "
-echo "$lport1"
+if [ -z "$lport1" ]
+then
+      echo "$lport2"
+else
+      echo "$lport1"
+fi
+
 echo " "
 
 runningprocesses=$(ps aux | wc -l)
