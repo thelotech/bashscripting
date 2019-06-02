@@ -1,0 +1,159 @@
+Things to look into:
+• info coreutils (in reference to Collecting System Data)
+• user accounts and privileges ...root and whatnot
+
+=============
+BRIEF RECAP:
+=============
+1. I wanted to familiarize myself with the Command-line Interface (CLI), and in this case, Terminal for the two VMs I previously created (Kali Linux and Ubuntu).
+- Reflection: The CLI enables a user to interact with their system in a more precise way, beyond the basic GUI (Graphical User Interface) limitations.
+
+2. I wanted to learn how to collect system details through using commands in Terminal.
+- Reflection: I searched around various resources online to figure out which commands would return which system details. I never really thought about how that information could be useful for information security, nor did I truly understand why certain components (like the options) were used in the command line. I'm going to dive into that later in this post.
+
+3. Create a bash script which would incorporate my knowledge of the CLI, the commands to return particular information about the system, and several other script concepts (comments, variables, loops, input/output, etc), to ask the user for their name, then display the user's name along with certain attributes of the system.
+- Reflection: There were many concepts I touched on, but didn't really explore in depth. I also didn't clearly explain in my previous blog why I used particular commands in the script. Additionally, there were bugs in my script. I'm going to break down the parts of my script and review where I succeeded and where I failed concerning my goal.
+
+
+=============
+MAIN GOAL: Create a bash script that asks the user for their name, then displays the user's name along with certain attributes of the system.
+=============
+
+
+
+=============
+DEBRIEF OF SCRIPT:
+=============
+
+DEBUG BASH SCRIPT:
+• I decided to go back and run my script with '-x' to print the commands and their arguments as the script was running through the commands. I found you can do this with either 'set -x' as the top of the bash script, or at the command line when running the script with 'bash -x ./system-details.sh'.
+
+This produced the following results:
+
+
+---------------------
+RESULTS OF THE DEBUG: I reviewed the following when looking at my original script, considering the details I wanted in the output (see previous blog https://thelotech.github.io/bash-script-vms.html). I compared the ORIGINAL script with the DEBUGGED script. I decided to restructure the script for a better output, as well.
+---------------------
+
+COMMENTS
+• ORIGINAL: Comments aren't executed by the script -- they are explanatory and help the reader understand the source code. I had a comment at the top, but it wasn't really helpful.
+• DEBUGGED: In my debugged script, you can see I added more comments to help explain more about my work.
+
+
+PROMPTING THE USER FOR THEIR NAME: SUCCESS(ish)
+• ORIGINAL: 
+- The 'echo' command was fine, but in order to be more consistent and practice safe scripting, I would have wanted to add quotation marks on that line.
+- Additionally, I realized I could request the input on the same line for a better look!
+
+	echo Hello, who am I talking to?
+
+	read varname
+
+• DEBUGGED: Using the 'read' command and the '-p' option would print the string prompt, without a newline, before beginning to read.
+
+	read -p "Please enter your username: " UNAME
+
+
+DISPLAY USER'S NAME: SUCCESS
+• ORIGINAL: This was technically fine.
+
+	echo "Hello ${varname}!"
+
+• DEBUGGED: The only change I made was using a different variable for the input.
+
+	echo "Hello, ${UNAME}. Here are your system details."
+
+
+DISPLAY FILENAME OF THE BASH SCRIPT: SUCCESS
+• ORIGINAL: This was overkill. I used a variable, however, it was a simple command that I could have just included in the line to be output. Basically, anything between the '$( )' are commands to execute.
+
+	FILE_NAME=$(basename -- "$0")
+	echo "You are now running the bash script ${FILE_NAME}. Here are some details about this system:"
+
+• DEBUGGED: I changed this to use the commands inline instead of a variable.
+
+	echo "This script is $(basename -- "$0")
+
+
+DISPLAY THE CURRENT DIRECTORY THE USER IS IN: SUCCESS(ish)
+• ORIGINAL: Technically correct.
+
+	echo "You are currently in directory $PWD."
+
+• DEBUGGED: Upon reviewing the way I used the command in the script, I updated it to avoid potential failures (https://unix.stackexchange.com/questions/173916/is-it-better-to-use-pwd-or-pwd).
+
+	echo "You are currently in $(pwd)"
+
+
+DISPLAY AMOUNT OF RAM DEDICATED TO THE SYSTEM: FAIL
+• ORIGINAL: Creating a variable wasn't really necessary. Beyond that, I did have issues with the commands I didn't realize at first.
+
+	hwmemsize=$(free -g | grep MemTotal /proc/meminfo | awk '{print $2 " " $3}')
+	echo "This system has ${hwmemsize} of RAM dedicated to it."
+
+	- 'free -g' did output information about the memory in both Kali Linux and Ubuntu, however, I tested it in macOS, and it failed. The 'free' command provides information about memory usage. The 'g' option changes the display of the memory to gigabytes, however, I should keep it as kilobytes.
+	- Using 'bash -x ./system-details.sh' in Terminal on my Mac returned the following:
+
+	++ free -g
+	./system-details-edit.sh: line 25: free: command not found
+	++ grep MemTotal /proc/meminfo
+	++ awk '{print $2 " " $3}'
+	grep: /proc/meminfo: No such file or directory
+	+ hwmemsize=
+	+ echo 'This system has  of RAM dedicated to it.'
+	This system has  of RAM dedicated to it.
+
+	- 'free: command not found' - macOS couldn't use the 'free' command.
+	- 'grep: /proc/meminfo: No such file or directory' - I couldn't find the directory that should have contained 'MemToral' on my system.
+
+• DEBUGGED: In order to display the correct output, I used 
+
+	
+
+
+
+
+
+
+===================================================
+
+COMMANDS: I was searching around online for the commands to retrieve certain pieces of data.
+
+• ps - process status: displays a header line, followed by lines containing
+     information about all of your processes that have controlling terminals.
+
+
+
+
+
+Programming Concepts Learned:
+
+• Variables: allow you to manipulate stuff better; control the data inputted in different ways
+• Loops
+• Input/Output
+	- standard output: 
+	- standard input: 
+• How Pipes were used
+
+Debugging:
+• native debugger: A native debugger allows you to stop execution and inspect or manipulate the system state at any time.
+• 'man [command]' lets you see in terminal what the command does... WAT?!?!
+
+• exit status: Each Linux command returns a status when it terminates normally or abnormally. You can use value of exit status in the shell script to display an error message or take some sort of action. (use echo $? to view the exit status. 0 means command was successful!)
+
+What I Learned About Commands:
+
+
+
+PWD: prints the current working directory name; this command shows the full path from the root directory; from there, I can navigate through different directories using the 'cd' command, which lets me change directories
+• What I did: 
+
+
+
+
+
+
+
+TO ADD TO THE NEW RECAP:
+• I also learned a little about loops...
+• test scripting! 
