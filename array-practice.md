@@ -40,3 +40,8 @@ Back to the drawing board! I wanted to be able to go through the standard output
 **Array:** An array is a variable containing multiple values.
 
 As I was already familiar with the basic concept of variables, this was just a new way to use that concept. Time to start practicing Arrays!
+
+I located the following resources:
+* https://stackoverflow.com/questions/8880603/loop-through-an-array-of-strings-in-bash
+* https://access.redhat.com/sites/default/files/attachments/rh_ip_command_cheatsheet_1214_jcs_print.pdf
+
