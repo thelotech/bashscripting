@@ -1,4 +1,4 @@
-# Discovering Arrays in Bash Script
+# Discovering Loops and Arrays in Bash Script
 
 When I was attempting to write my bash script for gathering system details, [system-details.sh](https://github.com/thelotech/bashscripting/blob/master/system-details.sh), I realized there was one thing I should have learned: arrays.
 
@@ -33,15 +33,46 @@ $ ifconfig | grep ether | awk '{print $2}'  #MAC
 
 But looking at my script, I don't think it would work to display potentially more networks on other systems. Additionally, there should be a MAC address for each network interface.
 
-Back to the drawing board! I wanted to be able to go through the standard output of `ip` and search for *all* of the network interfaces, IPv4 addresses and MAC addresses, not just a set number of them. ARRAY TIME!
+Back to the drawing board! I wanted to be able to go through the standard output of `ip` and search for *all* of the network interfaces, IPv4 addresses and MAC addresses, not just a set number of them. So I would need to loop through array values...
 
-## Basics of Arrays
+## Basics of Loops
 
-**Array:** An array is a variable containing multiple values.
+Bash loops can help to take certain commands and run them over and over again until a set condition is met. For example, looping through strings of an output until information is gathered and printed out... such as specific network details from an `ip` output.
 
-As I was already familiar with the basic concept of variables, this was just a new way to use that concept. Time to start practicing Arrays!
+I used a [Bash Scripting Tutorial](https://ryanstutorials.net/bash-scripting-tutorial/bash-loops.php) on Ryans Tutorials website for a quick introduction to loops.
 
-I located the following resources:
-* https://stackoverflow.com/questions/8880603/loop-through-an-array-of-strings-in-bash
-* https://access.redhat.com/sites/default/files/attachments/rh_ip_command_cheatsheet_1214_jcs_print.pdf
+### While Loops
 
+A "while loop" says that while a particular expression is true, the loop should keep executing given commands.
+
+Here is an example of a simple while loop, showing that while variable 'counter' is less than or equal to (`-le`) 10, it should echo the value of 'counter' +1 (`counter++`):
+
+```bash
+#!/bin/bash
+
+counter=1
+while [ $counter -le 10 ]
+do
+  echo $counter
+  ((counter++))
+done
+
+echo All done
+```
+
+As you can see, the resulting output is as follows. This shows that once the variable value no longer meets the 'less than 10' test, the loop stops and 'All done' is echoed:
+
+```bash
+$ ./looppractice.sh
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+All done
+```
