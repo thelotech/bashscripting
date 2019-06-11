@@ -1,0 +1,5 @@
+Rex has a yellow coat and is 15 inches tall with blue eyes and lives in Dallas.
+Rover has a brown coat and is 13 inches tall with green eyes and lives in Pflugerville.
+Spot has a white coat and is 12 inches tall with brown eyes and lives in Georgetown.
+Tahlia has a yellow coat and is 27 inches tall with black eyes and lives in Austin.
+Hooch has a yellow coat and is 84 inches tall with gray eyes and lives in Buda.
