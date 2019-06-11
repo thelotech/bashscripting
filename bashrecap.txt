@@ -15,9 +15,21 @@ BRIEF RECAP:
 - Reflection: There were many concepts I touched on, but didn't really explore in depth. I also didn't clearly explain in my previous blog why I used particular commands in the script. Additionally, there were bugs in my script. I'm going to break down the parts of my script and review where I succeeded and where I failed concerning my goal.
 
 
-=============
-MAIN GOAL: Create a bash script that asks the user for their name, then displays the user's name along with certain attributes of the system.
-=============
+======================
+MAIN GOAL: Create a bash script that asks the user for their name, then displays the user's name along with certain attributes of the system, including:
+
+- The name/handle entered by the user running the script: 
+- Filename of the bash script: the actual file name
+- Current directory that the user is in: the path for the current directory/folder you are working in
+- Amount of RAM dedicated to the system: pretty self-explanatory
+- Uptime of the system: shows the time when the system is operational (downtime is when the device is not working/operational)
+- Hostname of the system: this is the unique name of the system on a network
+- IPv4 address of each network interface: the unique number used to identify a device on the network - helps in communicating with other devices on different networks
+- MAC address of each network interface: the "Media Access Control Address" is the hardware identification number unique to the device on the network (NOTE: The IPv4 and MAC addresses operate on different layers of the internet protocol suite, with MAC on layer 2 and IP on layer 3.)
+- LISTENing ports: 
+- Total number of processes running on the system
+- Free disk space remaining in the root filesystem
+======================
 
 
 
@@ -35,7 +47,9 @@ This produced the following results:
 RESULTS OF THE DEBUG: I reviewed the following when looking at my original script, considering the details I wanted in the output (see previous blog https://thelotech.github.io/bash-script-vms.html). I compared the ORIGINAL script with the DEBUGGED script. I decided to restructure the script for a better output, as well.
 ---------------------
 
+------------------------------
 COMMENTS
+------------------------------
 • ORIGINAL: Comments aren't executed by the script -- they are explanatory and help the reader understand the source code. I had a comment at the top, but it wasn't really helpful.
 • DEBUGGED: In my debugged script, you can see I added more comments to help explain more about my work.
 
@@ -54,7 +68,9 @@ PROMPTING THE USER FOR THEIR NAME: SUCCESS(ish)
 	read -p "Please enter your username: " UNAME
 
 
+------------------------------
 DISPLAY USER'S NAME: SUCCESS
+------------------------------
 • ORIGINAL: This was technically fine.
 
 	echo "Hello ${varname}!"
@@ -64,7 +80,9 @@ DISPLAY USER'S NAME: SUCCESS
 	echo "Hello, ${UNAME}. Here are your system details."
 
 
+------------------------------
 DISPLAY FILENAME OF THE BASH SCRIPT: SUCCESS
+------------------------------
 • ORIGINAL: This was overkill. I used a variable, however, it was a simple command that I could have just included in the line to be output. Basically, anything between the '$( )' are commands to execute.
 
 	FILE_NAME=$(basename -- "$0")
@@ -75,7 +93,9 @@ DISPLAY FILENAME OF THE BASH SCRIPT: SUCCESS
 	echo "This script is $(basename -- "$0")
 
 
+------------------------------
 DISPLAY THE CURRENT DIRECTORY THE USER IS IN: SUCCESS(ish)
+------------------------------
 • ORIGINAL: Technically correct.
 
 	echo "You are currently in directory $PWD."
@@ -85,7 +105,9 @@ DISPLAY THE CURRENT DIRECTORY THE USER IS IN: SUCCESS(ish)
 	echo "You are currently in $(pwd)"
 
 
+------------------------------
 DISPLAY AMOUNT OF RAM DEDICATED TO THE SYSTEM: FAIL
+------------------------------
 • ORIGINAL: Creating a variable wasn't really necessary. Beyond that, I did have issues with the commands I didn't realize at first.
 
 	hwmemsize=$(free -g | grep MemTotal /proc/meminfo | awk '{print $2 " " $3}')
@@ -109,6 +131,48 @@ DISPLAY AMOUNT OF RAM DEDICATED TO THE SYSTEM: FAIL
 • DEBUGGED: In order to display the correct output, I used 
 
 	
+------------------------------
+DISPLAY UPTIME OF THE SYSTEM: SUCCESS
+------------------------------
+• ORIGINAL: Again, I didn't require the variable assignment, but I was practicing. It should be noted that this command doesn't work on macOS, but it did work on my VMs.
+
+	systemuptime=$(uptime -p | awk '{$1=""}1')
+	echo "This system has been in operation for${systemuptime}!"
+
+• DEBUGGED: I rewrote it, but the actual commands were fine.
+
+	echo "The system has been online for $(uptime -p | awk '{$1=""}1')"
+
+
+------------------------------
+DISPLAY HOSTNAME OF THE SYSTEM: SUCCESS
+------------------------------
+• ORIGINAL: This was fine, but very unnecessary for the variable.
+
+	hostname=$(hostname)
+	echo "The system hostname is ${hostname}."
+
+• DEBUGGED: Minor change.
+
+	echo "The hostname is $(hostname)"
+
+
+------------------------------
+DISPLAY IPV4 AND MAC ADDRESSES OF EACH NETWORK INTERFACE: FAIL
+------------------------------
+• ORIGINAL: Being unfamiliar with network details, I wasn't quite clear on how IPv4 addresses and MAC addresses related to each other on the system and on the network. In both VMs, I was able to use the commands in variable 'ipv4' to get the two different networks; however, this was only useful for the number of interfaces my VMs actually had -- it wouldn't be consistent on every system.
+
+	ipv4=$(ip -br addr show | awk '{print $1 ": " $3}' | cut -d/ -f1)
+	ipv4a=$(ip -br addr show | awk '{print $1 " " $3}')
+	macaddress=$(ifconfig | grep ether | awk '{print $2}')
+	echo "Check out the IPv4 address(es) for network interface(s): "
+	echo "${ipv4}"
+	echo "The MAC address is ${macaddress}."
+
+• DEBUGGED: This one took a little work. I had to go back in and review ways to output the network interfaces and the IPv4 addresses and MAC addresses.
+- Because different systems can have a different number of interfaces, I reviewed "arrays" for the first time: https://www.thegeekstuff.com/2010/06/bash-array-tutorial/
+https://www.learnshell.org/en/Arrays
+- 
 
 
 
@@ -117,12 +181,9 @@ DISPLAY AMOUNT OF RAM DEDICATED TO THE SYSTEM: FAIL
 
 ===================================================
 
-COMMANDS: I was searching around online for the commands to retrieve certain pieces of data.
+IPV4
 
-• ps - process status: displays a header line, followed by lines containing
-     information about all of your processes that have controlling terminals.
-
-
+https://www.cyberciti.biz/faq/searching-multiple-words-string-using-grep/
 
 
 
@@ -142,15 +203,6 @@ Debugging:
 • exit status: Each Linux command returns a status when it terminates normally or abnormally. You can use value of exit status in the shell script to display an error message or take some sort of action. (use echo $? to view the exit status. 0 means command was successful!)
 
 What I Learned About Commands:
-
-
-
-PWD: prints the current working directory name; this command shows the full path from the root directory; from there, I can navigate through different directories using the 'cd' command, which lets me change directories
-• What I did: 
-
-
-
-
 
 
 

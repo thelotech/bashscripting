@@ -1,16 +1,21 @@
 #!/bin/bash
 
-# Objective: Create a bash script that asks the user for their name, then displays the user's name along with certain attributes of the system.
-# File: system-details.sh
-# Author: thelotech
+# OBJECTIVE: Create a bash script that asks the user for their name, then 
+# displays the user's name along with certain attributes of the system.
+# 
+# FILE: system-details.sh
+# AUTHOR: thelotech
 
 # ------------------------------------------------------------------
 # INPUT: The following is the only time the user will enter text.
+# ------------------------------------------------------------------
+
 # Using the read command to prompt the user for their name
 read -p "Please enter your username: " UNAME
 
 # ------------------------------------------------------------------
 # OUTPUT: The rest of the script is what is output when the script is run
+# ------------------------------------------------------------------
 
 # Greeting the user with the input from the variable assigned by the read command 
 echo "Hello, ${UNAME}. Here are your system details."
@@ -24,16 +29,15 @@ echo "You are currently in $(pwd)"
 # Display the amount of RAM available to the system
 hwmemsize=$(free -g | grep MemTotal /proc/meminfo | awk '{print $2 " " $3}')
 echo "This system has ${hwmemsize} of RAM dedicated to it."
-echo " "
 
-systemuptime=$(uptime -p | awk '{$1=""}1')
-echo "This system has been in operation for${systemuptime}!"
-echo " "
+# Display the uptime for the system
+echo "The system has been online for $(uptime -p | awk '{$1=""}1')"
 
-hostname=$(hostname)
-echo "The system hostname is ${hostname}."
-echo " "
+# Display the system's hostname
+echo "The hostname is $(hostname)"
 
+# Display details of the network, such as IPv4 and the corresponding
+# MAC addresses for the network interfaces.
 ipv4=$(ip -br addr show | awk '{print $1 ": " $3}' | cut -d/ -f1)
 ipv4a=$(ip -br addr show | awk '{print $1 " " $3}')
 macaddress=$(ifconfig | grep ether | awk '{print $2}')
